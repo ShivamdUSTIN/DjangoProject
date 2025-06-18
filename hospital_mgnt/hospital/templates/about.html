@@ -1,0 +1,40 @@
+{% load static %}
+{% include 'base.html' %}
+
+
+
+
+<section class="about_section layout_margin-bottom">
+    <div class="container  ">
+      <div class="row">
+        <div class="col-md-6 ">
+          <div class="img-box">
+            <img src="{% static 'images/about-img.jpg' %}" alt="">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="detail-box">
+            <div class="heading_container">
+              <h2>
+                About <span>Us</span>
+              </h2>
+            </div>
+            <p>
+              LifeLine Hospital, founded under the flagship of Sahyog Hospital, professes the ideology 
+              of ‘for the people and by the people'. We aim to serve with specialized medical 
+              care at an affordable cost. As private health care providers, we stand apart from 
+              others by creating an integrated Health Care System that Fosters, Protects, Sustains, 
+              and Restores Health through best-in-class medical practices accessible to people in rural 
+              and remote areas. Every staff member working at Life Line Hospital, from doctors, nurses to the 
+              management team, is united to render exceptional health care service to all.
+            </p>
+            <a href="">
+              Read More
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% include 'footer.html' %}

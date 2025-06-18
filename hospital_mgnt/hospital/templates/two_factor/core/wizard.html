@@ -1,0 +1,32 @@
+<div class="two-factor-wizard">
+    {% if wizard.steps.current == 'auth' %}
+        <h4 class="text-center mb-4">Login Credentials</h4>
+        <form method="post" class="form-auth">
+            {% csrf_token %}
+            {{ wizard.management_form }}
+            {{ wizard.form.as_p }}
+            <button type="submit" class="btn btn-primary btn-block">Continue</button>
+        </form>
+    
+    {% elif wizard.steps.current == 'token' %}
+        <h4 class="text-center mb-4">Two-Factor Verification</h4>
+        <form method="post" class="form-token">
+            {% csrf_token %}
+            {{ wizard.management_form }}
+            {{ wizard.form.as_p }}
+            <button type="submit" class="btn btn-primary btn-block">Verify</button>
+        </form>
+        <div class="text-center mt-3">
+            <a href="#" class="btn btn-link" id="resend-token">Resend Token</a>
+        </div>
+    
+    {% elif wizard.steps.current == 'backup' %}
+        <h4 class="text-center mb-4">Backup Token</h4>
+        <form method="post" class="form-backup">
+            {% csrf_token %}
+            {{ wizard.management_form }}
+            {{ wizard.form.as_p }}
+            <button type="submit" class="btn btn-primary btn-block">Authenticate</button>
+        </form>
+    {% endif %}
+</div>

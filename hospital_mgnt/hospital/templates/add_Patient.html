@@ -1,0 +1,54 @@
+{% include 'base.html' %}
+{% include 'navigation.html' %}
+
+{% block content %}
+
+{% if error %}
+<script>
+    alert('{{ error }}');
+</script>
+{% endif %}
+
+{% if error == "no" %}
+<script>
+    alert('Record save successfully');
+    window.location = "{% url 'view_Patient' %}";
+</script>
+{% elif error == "yes" %}
+<script>
+    alert('Invalid login, try again');
+</script>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <label>Patient Name</label>
+    <input type="text" class="form-control" name="name" required />
+    
+    <label>Phone</label>
+    <input type="text" class="form-control" name="phone" required />
+    
+    <label>Age</label>
+    <input type="number" class="form-control" name="age" required />
+    
+    <label>Gender</label>
+    <select class="form-control" name="gender" required>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+    </select>
+    
+    <label>Email</label>
+    <input type="email" class="form-control" name="email" required />
+    
+    <label>Address</label>
+    <textarea class="form-control" name="address" required></textarea>
+    
+    <br>
+    <input type="submit" value="Submit" class="form-control btn btn-primary" />
+</form>
+
+
+</div>
+
+{% endblock content %}

@@ -1,0 +1,220 @@
+{% load static %}
+<!-- Appointment Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content"> 
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Book Appointment</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="appointment-form">
+          {% csrf_token %}
+          <!-- Your existing form fields -->
+          <div class="form-group">
+            <label for="doctor" class="col-form-label">Doctor:</label>
+            <select class="form-control select-doctor" id="doctor" name="doctor" required>
+                <option value="">Loading doctors...</option>
+            </select>
+            <div class="text-center mt-2">
+                <div class="spinner-border spinner-border-sm text-primary doctor-loading" role="status" style="display: none;">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <div id="doctor-details" class="mt-3 p-3 border rounded" style="display: none;">
+                <h5>Selected Doctor Details</h5>
+                <p><strong>Name:</strong> <span id="doctor-name"></span></p>
+                <p><strong>Specialization:</strong> <span id="doctor-specialization"></span></p>
+                <p><strong>Contact:</strong> <span id="doctor-contact"></span></p>
+            </div>
+          </div>
+          <!-- Rest of your form fields -->
+
+          <div class="form-group">
+            <label for="name" class="col-form-label"> Patient Name:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="email" class="col-form-label">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+            
+          </div>
+          <div class="form-group">
+            <label for="phone" class="col-form-label">Phone:</label>
+            <input type="text" class="form-control" id="phone" name="phone" required>
+          </div>
+
+          <div class="form-group">
+            <label for="date" class="col-form-label">Appointment Date:</label>
+            <input type="date" class="form-control" id="date" name="date" required>
+          </div>
+          <div class="form-group">
+            <label for="time" class="col-form-label">Appointment Time:</label>
+            <input type="time" class="form-control" id="time" name="time" required>
+          </div>
+
+          <div class="form-group">
+            <label for="message" class="col-form-label">Message:</label>
+            <textarea class="form-control" id="message" name="message"></textarea>
+          </div>
+
+
+
+        
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="submit-appointment">Submit</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+$(document).ready(function() {
+    // Load doctors when modal is shown
+    $('#exampleModal').on('show.bs.modal', function () {
+        loadDoctors();
+    });
+
+    function loadDoctors() {
+        $('.doctor-loading').show();
+        $('#doctor').html('<option value="">Loading doctors...</option>');
+        
+        $.ajax({
+            url: '{% url "get_available_doctors" %}',  // You'll need to create this URL
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                if(data.doctors.length > 0) {
+                    var options = '<option value="">Select Doctor</option>';
+                    $.each(data.doctors, function(index, doctor) {
+                        options += `<option value="${doctor.id}" 
+                                   data-specialization="${doctor.specialization}"
+                                   data-phone="${doctor.phone}"
+                                   data-email="${doctor.email}">
+                                   Dr. ${doctor.name} - ${doctor.specialization}
+                                   </option>`;
+                    });
+                    $('#doctor').html(options);
+                } else {
+                    $('#doctor').html('<option value="">No doctors available</option>');
+                }
+            },
+            error: function() {
+                $('#doctor').html('<option value="">Error loading doctors</option>');
+            },
+            complete: function() {
+                $('.doctor-loading').hide();
+            }
+        });
+    }
+
+    // When doctor is selected, show their details
+    $('#doctor').change(function() {
+        if ($(this).val()) {
+            var selectedOption = $(this).find('option:selected');
+            $('#doctor-name').text(selectedOption.text().split(' - ')[0]);
+            $('#doctor-specialization').text(selectedOption.data('specialization'));
+            $('#doctor-contact').text(selectedOption.data('phone') + ' | ' + selectedOption.data('email'));
+            $('#doctor-details').show();
+        } else {
+            $('#doctor-details').hide();
+        }
+    });
+});
+</script>
+
+
+<script>
+  $(document).ready(function() {
+      $('#submit-appointment').click(function(e) {
+          e.preventDefault(); // Prevent full page reload
+  
+          let formData = {
+              'doctor': $('#doctor').val(),
+              'name': $('#name').val(),
+              'email': $('#email').val(),
+              'phone': $('#phone').val(),
+              'date': $('#date').val(),
+              'time': $('#time').val(),
+              'message': $('#message').val(),
+              'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+          };
+  
+          $.ajax({
+              url: "{% url 'make_appointment' %}",
+              type: 'POST',
+              data: formData,
+              dataType: 'json',
+              success: function(response) {
+                  if (response.success) {
+                      alert("Appointment booked!");
+                      $('#appointment-form')[0].reset();
+                      $('#doctor-details').hide();
+                      $('#exampleModal').modal('hide');
+                  } else {
+                      alert("Error: " + (response.errors || "Something went wrong"));
+                  }
+              },
+              error: function(xhr, errmsg, err) {
+                  console.error("AJAX error:", errmsg);
+                  alert("An error occurred. Please check the console.");
+              }
+          });
+      });
+  });
+ 
+  
+  $('#submit-appointment').click(function() {
+    var formData = {
+        'name': $('#name').val(),
+        'email': $('#email').val(),
+        'phone': $('#phone').val(),
+        'doctor': $('#doctor').val(),
+        'date': $('#date').val(),
+        'time': $('#time').val(),
+        'message': $('#message').val(),
+        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+    };
+    
+    // Basic validation
+    if (!formData.doctor || !formData.date || !formData.time) {
+        alert('Please select a doctor, date, and time');
+        return;
+    }
+    
+    $(this).prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Booking...');
+    
+    $.ajax({
+        url: '{% url "book_appointment" %}',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function(response) {
+            if (response.success) {
+                alert(response.message);
+                $('#exampleModal').modal('hide');
+                // Reset form
+                $('#appointment-form')[0].reset();
+                $('#doctor-details').hide();
+            } else {
+                alert(response.message);
+            }
+        },
+        error: function(xhr) {
+            alert('An error occurred. Please try again.');
+        },
+        complete: function() {
+            $('#submit-appointment').prop('disabled', false).text('Submit');
+        }
+    });
+});
+</script>

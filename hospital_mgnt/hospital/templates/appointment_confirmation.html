@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #007bff; color: white; padding: 10px; text-align: center; }
+        .details { margin: 20px 0; padding: 15px; background-color: #f8f9fa; }
+        .footer { margin-top: 20px; font-size: 0.8em; color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Appointment Confirmation</h2>
+        </div>
+        
+        <p>Dear {{ patient_name }},</p>
+        
+        <p>Your appointment has been confirmed with Dr. {{ doctor.name }} ({{ doctor.specialization }}).</p>
+        
+        <div class="details">
+            <h3>Appointment Details:</h3>
+            <p><strong>Date:</strong> {{ date }}</p>
+            <p><strong>Time:</strong> {{ time }}</p>
+            
+            <h3>Doctor Contact:</h3>
+            <p><strong>Phone:</strong> {{ doctor.phone }}</p>
+            <p><strong>Email:</strong> {{ doctor.email }}</p>
+        </div>
+        
+        <p>Please arrive 15 minutes before your scheduled time.</p>
+        
+        <div class="footer">
+            <p>Thank you,<br>{{ site_name }}</p>
+        </div>
+    </div>
+</body>
+</html>

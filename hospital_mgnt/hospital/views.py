@@ -10,21 +10,26 @@ from django.db import connection
 import json
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from django_otp.models import Device
-
-
-# Use these imports instead
-from django_otp.decorators import otp_required
 from django.utils.decorators import method_decorator
-
 from django.contrib.auth.decorators import login_required
 
 
 from django.contrib.auth.decorators import login_required
-from django_otp.decorators import otp_required
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
+from django.contrib.auth import login, logout
+from auth_app.middlewares import auth, guest
 
-@login_required
-@otp_required
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+
+
+
+
 def admin_dashboard(request):
     if not request.user.is_staff:
         return redirect('home')
@@ -36,8 +41,7 @@ def admin_dashboard(request):
     }
     return render(request, 'admin_dashboard.html', context)
 
-@login_required
-@otp_required
+@auth
 def view_Doctor(request):
     if not request.user.is_staff:
         return redirect('two_factor:login')
@@ -45,8 +49,7 @@ def view_Doctor(request):
     d = {'doc': doc}
     return render(request, 'view_doctor.html', d)
 
-@login_required
-@otp_required
+
 def AddDoctor(request):
     error = ""
     if request.method == "POST":
@@ -61,46 +64,13 @@ def About(request):
 def Home(request):
     return render(request, 'home.html')
 
-def Contact(request):
-    return render(request, 'contact.html')
-
 def Departments(request):
     return render(request,'departments.html')
-
-def doctor(request):
-    return render(request, 'doctors.html')
-
-# Authentication views
-# def Index(request):
-#     if not request.user.is_staff:
-#         return redirect('two_factor:login')
-#     return render(request, 'index.html')
 
 def Index(request):
     return render (request , 'index.html')
 
-# @login_required
-# def admin_dashboard(request):
-#     if request.user.is_authenticated and request.user.is_staff:
-#         if not request.user.otp_device:
-#             return redirect(reverse('two_factor:setup'))
-#         return render(request, 'admin_dashboard.html')
-#     return redirect('home')
-
-# @login_required
-# @otp_required
-# def admin_dashboard(request):
-#     if request.user.is_authenticated and request.user.is_staff:
-#         if not request.user.otp_device:
-#             return redirect(reverse('two_factor:setup'))
-#         return render(request, 'admin_dashboard.html')
-#     return redirect('home')
-
-from django.contrib.auth.decorators import login_required
-from django_otp.decorators import otp_required
-
-@login_required
-@otp_required
+@auth
 def admin_dashboard(request):
     if not request.user.is_staff:
         return redirect('home')
@@ -112,22 +82,9 @@ def admin_dashboard(request):
     }
     return render(request, 'admin_dashboard.html', context)
 
-# @login_required
-# @otp_required
-# def admin_dashboard(request):
-#     if request.user.is_staff:
-#         return render(request, 'admin_dashboard.html')
-#     return redirect('index')
-
-
-def Logout_admin(request):
-    if request.user.is_authenticated:
-        Device.objects.filter(user=request.user).delete()
-    logout(request)
-    return redirect('home')
 
 # Admin-protected views
-@otp_required
+
 def view_Doctor(request):
     if not request.user.is_staff:
         return redirect('two_factor:login')
@@ -135,7 +92,6 @@ def view_Doctor(request):
     d = {'doc': doc}
     return render(request, 'view_doctor.html', d)
 
-@otp_required
 def view_patient(request):
     if not request.user.is_staff:
         return redirect('two_factor:login')
@@ -143,7 +99,7 @@ def view_patient(request):
     d = {'doc': doc}
     return render(request, 'view_patient.html', d)
 
-@otp_required
+
 def Delete_Doctor(request, pid):
     if not request.user.is_staff:
         return redirect('two_factor:login')
@@ -151,7 +107,7 @@ def Delete_Doctor(request, pid):
     doctor.delete()
     return redirect('view_doctor')
 
-@otp_required
+
 def Delete_Patient(request, pid):
     if not request.user.is_staff:
         return redirect('two_factor:login')
@@ -159,7 +115,7 @@ def Delete_Patient(request, pid):
     patient.delete()
     return redirect('view_patient')
 
-@otp_required
+
 def AddDoctor(request):
     error = ""
     if request.method == "POST":
@@ -190,7 +146,7 @@ def AddDoctor(request):
                 error = f"An unexpected error occurred: {str(e)}"
     return render(request, 'add_doctor.html', {'error': error})
 
-@otp_required
+
 def add_patient(request):
     error = ""
     if request.method == "POST":
@@ -226,26 +182,6 @@ def appointment_view(request):
     context = {'doctors': doctors}
     return render(request, 'appointment.html', context)
 
-def make_appointment(request):
-    if request.method == "POST":
-        try:
-            data = request.POST
-            doctor = Doctor.objects.get(id=data.get('doctor'))
-            
-            appointment = Appointment(
-                name=data.get('name'),
-                email=data.get('email'),
-                phone=data.get('phone'),
-                doctor=doctor,
-                date=data.get('date'),
-                time=data.get('time'),
-                message=data.get('message')
-            )
-            appointment.save()
-            return JsonResponse({"success": True})
-        except Exception as e:
-            return JsonResponse({"success": False, "errors": str(e)})
-    return JsonResponse({"success": False, "errors": "Invalid request method"})
 
 def get_available_doctors(request):
     try:
@@ -261,29 +197,6 @@ def get_available_doctors(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
-def book_appointment(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            appointment = Appointment.objects.create(
-                patient_name=data['name'],
-                patient_email=data['email'],
-                patient_phone=data['phone'],
-                doctor_id=data['doctor'],
-                date=data['date'],
-                time=data['time'],
-                message=data.get('message', '')
-            )
-            return JsonResponse({
-                'success': True,
-                'message': 'Appointment booked successfully!'
-            })
-        except Exception as e:
-            return JsonResponse({
-                'success': False,
-                'message': f'Error: {str(e)}'
-            }, status=400)
-    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=405)
 
 def test_db(request):
     try:
@@ -294,12 +207,8 @@ def test_db(request):
     except Exception as e:
         return HttpResponse(f"Database connection failed: {str(e)}")
     
-    # Add this to views.py
 
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-
-@csrf_exempt  # Optional: Only use this if you're testing without CSRF token
+# @csrf_exempt  # Optional: Only use this if you're testing without CSRF token
 def submit_form(request):
     if request.method == "POST":
         name = request.POST.get("name")
@@ -314,5 +223,102 @@ def submit_form(request):
     return JsonResponse({"success": False, "message": "Invalid request method."})
 
 
-# In your views.py
-    # return render(request, 'two_factor/_base.html', context)
+def departments_view(request):
+    departments = [
+        {
+            "name": "Cardiology",
+            "image": "images/s1.png",
+            "description": "Experienced surgeons in beating heart & bloodless surgeries."
+        },
+        {
+            "name": "Diagnosis",
+            "image": "images/s2.png",
+            "description": "Advanced diagnostic services with rapid results."
+        },
+        {
+            "name": "Anaesthesiology",
+            "image": "images/s3.png",
+            "description": "Pain management and patient care before, during and after surgery."
+       },
+        {
+            "name": "First Aid",
+            "image": "images/s4.png",
+            "description": "Emergency care for quick stabilization and triage."
+        },
+        {
+            "name": "Neurology",
+            "image": "images/s5.png",
+            "description": "Comprehensive care for brain and nervous system disorders."
+        },
+        {
+            "name": "Orthopaedics",
+            "image": "images/s6.png",
+            "description": "Treatment of bones, joints, ligaments, and muscles."
+        },
+    ]
+    return render(request, 'departments.html', {'departments': departments})
+
+
+
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages  # Add this import
+from .forms import GetInTouchForm
+
+def contact_view(request):
+    if request.method == 'POST':
+        form = GetInTouchForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Thank you for getting in touch!')
+            return redirect('contact')  # Redirect to clear POST data
+    else:
+        form = GetInTouchForm()
+    return render(request, 'contact.html', {'form': form})
+
+def doctors_public_view(request):
+    doctors = Doctor.objects.all().order_by('-id')[:8]  # Latest 8 doctors
+    return render(request, 'doctors.html', {'doctors': doctors})
+
+def make_appointment(request):
+    if request.method == "POST":
+        try:
+            # Handle both form-data and JSON requests
+            if request.content_type == 'application/json':
+                data = json.loads(request.body)
+            else:
+                data = request.POST
+            
+            doctor = Doctor.objects.get(id=data.get('doctor'))
+            
+            appointment = Appointment(
+                name=data.get('name'),
+                email=data.get('email'),
+                phone=data.get('phone'),
+                doctor=doctor,
+                date=data.get('date'),
+                time=data.get('time'),
+                message=data.get('message', '')
+            )
+            appointment.save()
+            
+            return JsonResponse({
+                "success": True,
+                "message": "Appointment booked successfully!"
+            })
+        except Doctor.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": "Selected doctor does not exist"
+            }, status=400)
+        except Exception as e:
+            return JsonResponse({
+                "success": False,
+                "message": str(e)
+            }, status=400)
+    return JsonResponse({
+        "success": False,
+        "message": "Invalid request method"
+    }, status=405)

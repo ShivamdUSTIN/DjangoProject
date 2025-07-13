@@ -14,7 +14,7 @@
   <meta name="author" content="" />
   <link rel="shortcut icon" href="{% static 'images/favicon.png' %}" type="">
 
-  <title> Orthoc </title>
+  <title> LifeLine</title>
 
   <!-- bootstrap core css -->
   <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}" />
@@ -47,9 +47,9 @@
     <header class="header_section">
       <div class="container">
         <nav class="navbar navbar-expand-lg custom_nav-container ">
-          <a class="navbar-brand" href="index.html">
+          <a class="navbar-brand" href="{% url 'index' %}">
             <span>
-              Orthoc
+              LifeLine
             </span>
           </a>
 
@@ -60,19 +60,19 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav">
               <li class="nav-item">
-                <a class="nav-link" href="index.html">Home </a>
+                <a class="nav-link" href="{% url 'index' %}">Home </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="about.html"> About</a>
+                <a class="nav-link" href="{% url 'about' %}"> About</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="departments.html">Departments</a>
+                <a class="nav-link" href="{% url 'departments' %}">Departments</a>
               </li>
               <li class="nav-item active">
-                <a class="nav-link" href="doctors.html">Doctors <span class="sr-only">(current)</span> </a>
+                <a class="nav-link" href="{% url 'our_doctors' %}">Doctors <span class="sr-only">(current)</span> </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="contact.html">Contact Us</a>
+                <a class="nav-link" href="{% url 'contact' %}">Contact Us</a>
               </li>
               <form class="form-inline">
                 <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit">
@@ -99,7 +99,7 @@
           Incilint sapiente illo quo praesentium officiis laudantium nostrum, ad adipisci cupiditate sit, quisquam aliquid. Officiis laudantium fuga ad voluptas aspernatur error fugiat quos facilis saepe quas fugit, beatae id quisquam.
         </p>
       </div>
-      <div class="row">
+      <!-- <div class="row">
         <div class="col-sm-6 col-lg-4 mx-auto">
           <div class="box">
             <div class="img-box">
@@ -192,7 +192,35 @@
         <a href="">
           View All
         </a>
+      </div> -->
+<div class="row">
+  {% for doc in doctors %}
+  <div class="col-sm-6 col-lg-4 mx-auto">
+    <div class="box">
+      <div class="img-box">
+        <img src="{% static 'images/default_doctor.jpg' %}" alt="">
       </div>
+      <div class="detail-box">
+        <div class="social_box">
+          <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+          <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+          <a href="#"><i class="fa fa-youtube" aria-hidden="true"></i></a>
+          <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+        </div>
+        <h5>{{ doc.name }}</h5>
+        <h6 class="">{{ doc.specialization }}</h6>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+
+
+
+
+
+
     </div>
   </section>
 
@@ -268,7 +296,7 @@
               <a class="" href="departments.html">
                 Departments
               </a>
-              <a class="active" href="doctors.html">
+              <a class="active" href="{% url 'our_doctors' %}">
                 Doctors
               </a>
               <a class="" href="contact.html">

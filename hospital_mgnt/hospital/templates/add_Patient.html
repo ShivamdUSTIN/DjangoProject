@@ -3,52 +3,70 @@
 
 {% block content %}
 
-{% if error %}
-<script>
-    alert('{{ error }}');
-</script>
-{% endif %}
+<div class="container mt-4">
+    {% if error %}
+        <script>
+            alert('{{ error }}');
+        </script>
+    {% endif %}
 
-{% if error == "no" %}
-<script>
-    alert('Record save successfully');
-    window.location = "{% url 'view_Patient' %}";
-</script>
-{% elif error == "yes" %}
-<script>
-    alert('Invalid login, try again');
-</script>
-{% endif %}
+    {% if error == "no" %}
+        <script>
+            alert('Record saved successfully');
+            window.location = "{% url 'view_Patient' %}";
+        </script>
+    {% elif error == "yes" %}
+        <script>
+            alert('Invalid input, please try again');
+        </script>
+    {% endif %}
 
-<form method="post">
-    {% csrf_token %}
-    <label>Patient Name</label>
-    <input type="text" class="form-control" name="name" required />
-    
-    <label>Phone</label>
-    <input type="text" class="form-control" name="phone" required />
-    
-    <label>Age</label>
-    <input type="number" class="form-control" name="age" required />
-    
-    <label>Gender</label>
-    <select class="form-control" name="gender" required>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="Other">Other</option>
-    </select>
-    
-    <label>Email</label>
-    <input type="email" class="form-control" name="email" required />
-    
-    <label>Address</label>
-    <textarea class="form-control" name="address" required></textarea>
-    
-    <br>
-    <input type="submit" value="Submit" class="form-control btn btn-primary" />
-</form>
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Add New Patient</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name">Patient Name</label>
+                        <input type="text" class="form-control" name="name" id="name" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="phone">Phone</label>
+                        <input type="text" class="form-control" name="phone" id="phone" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="age">Age</label>
+                        <input type="number" class="form-control" name="age" id="age" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="gender">Gender</label>
+                        <select class="form-control" name="gender" id="gender" required>
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" name="email" id="email" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="address">Address</label>
+                        <textarea class="form-control" name="address" id="address" rows="3" required></textarea>
+                    </div>
+                </div>
 
-
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success px-4">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 {% endblock content %}
+{% include 'footer.html' %}

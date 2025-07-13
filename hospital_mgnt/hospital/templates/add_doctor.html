@@ -4,41 +4,53 @@
 {% block content %}
 
 {% if error %}
-<script>
-    alert('{{ error }}');
-</script>
+    <script>alert('{{ error }}');</script>
 {% endif %}
 
 {% if error == "no" %}
-<script>
-    alert('Record save successfully');
-    window.location = "{% url 'view_doctor' %}";
-</script>
+    <script>
+        alert('Record saved successfully');
+        window.location = "{% url 'view_doctor' %}";
+    </script>
 {% elif error == "yes" %}
-<script>
-    alert('Invalid login, try again');
-</script>
+    <script>
+        alert('Invalid input, please try again');
+    </script>
 {% endif %}
 
-<div class="container">
-    <h2 class="text-center">Add Doctor</h2>
-    <form method="post">
-        {% csrf_token %}
-        <label>Doctor Name</label>
-        <input type="text" class="form-control" name="name"/>
-        <label>Phone</label>
-        <input type="text" class="form-control" name="phone"/>
-        <label>Specialization</label>
-        <input type="text" class="form-control" name="specialization"/>
-        <label>Email</label>
-        <input type="text" class="form-control" name="email"/>
-        <br>
-        <br>
-
-
-        <input type="submit" value="submit" class="form-control btn btn-primary" />
-    </form>
-
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0 text-center">Add New Doctor</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Doctor Name</label>
+                        <input type="text" class="form-control" name="name" id="name" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" name="phone" id="phone" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="specialization" class="form-label">Specialization</label>
+                        <input type="text" class="form-control" name="specialization" id="specialization" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" id="email" required>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary px-4">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 {% endblock content %}
+{% include 'footer.html'%}

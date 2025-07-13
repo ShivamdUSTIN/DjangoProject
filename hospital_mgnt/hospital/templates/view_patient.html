@@ -1,43 +1,53 @@
 {% include 'base.html' %}
+{% include 'navigation.html' %}
 {% load static %}
 
-
 {% block content %}
-<div>
-    <h1 class = "text-center">View Patient</h1>
-    <table id="example"  class="table table-hover">
-        <thead>
-            <tr>
-                <th>DoctorID</th>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Gender</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Address</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for i in doc %}
-                <tr>
-                    <td>{{ i.id }}</td>
-                    <td>{{ i.name }}</td>
-                    <td>{{ i.age }}</td> 
-                    <td>{{ i.gender }}</td> 
-                    <td>{{ i.phone }}</td>
-                    <td>{{ i.email }}</td> 
-                    <td>{{ i.address }}</td>  <!-- Corrected the field name to 'specialization' -->
-                    <td> 
-                        <a href="{% url 'Delete_Patient' pid=i.id %}"
-
-                           onclick="return confirm('Are you sure you want to delete this Patient?')" class="btn btn-danger">Delete</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">Patient List</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="example" class="table table-hover table-bordered align-middle">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in doc %}
+                        <tr class="text-center">
+                            <td><span class="badge bg-secondary">{{ i.id }}</span></td>
+                            <td>{{ i.name }}</td>
+                            <td>{{ i.age }}</td>
+                            <td>{{ i.gender }}</td>
+                            <td>{{ i.phone }}</td>
+                            <td>{{ i.email }}</td>
+                            <td>{{ i.address }}</td>
+                            <td>
+                                <a href="{% url 'Delete_Patient' pid=i.id %}"
+                                   onclick="return confirm('Are you sure you want to delete this patient?')"
+                                   class="btn btn-sm btn-outline-danger">
+                                   <i class="bi bi-trash-fill"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
-
-
 {% endblock %}
+
 {% include 'footer.html' %}

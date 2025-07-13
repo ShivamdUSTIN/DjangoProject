@@ -114,12 +114,18 @@ class Medicine(models.Model):
         ordering = ['name']
         verbose_name = 'Medicine'
         verbose_name_plural = 'Medicines'
- ##### **For 2FA ###
-# from django.contrib.auth.models import AbstractUser
 
-# class CustomUser(AbstractUser):
-#     # Add any additional fields here
-#     phone_number = models.CharField(max_length=10, blank=True)
-    
-#     def __str__(self):
-#         return self.username
+# hospital/models.py
+
+from django.db import models
+
+class GetInTouch(models.Model):
+    name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=15)
+    email = models.EmailField()
+    message = models.TextField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.email}"

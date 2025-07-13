@@ -73,7 +73,7 @@
               
               {% if not request.user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'two_factor:login' %}">Admin Login</a>
+                <a class="nav-link" href="{% url 'login' %}">Admin Login</a>
               </li>
               {% endif %}
               
@@ -101,7 +101,7 @@
               
               {% if request.user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout_admin' %}">Logout</a>
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
               </li>
               {% endif %}
             </ul>
@@ -116,9 +116,6 @@
   <!-- footer section -->
   <footer class="footer_section">
     <div class="container">
-      <p>
-        &copy; <span id="displayYear"></span> All Rights Reserved By LifeLine
-      </p>
     </div>
   </footer>
   <!-- footer section -->

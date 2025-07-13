@@ -29,10 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'hospital',
-    'django_otp',
-    'django_otp.plugins.otp_totp',  # Time-based OTP
-    'django_otp.plugins.otp_static',  # Backup codes
-    'two_factor',
+    'auth_app',
+
     
 ]
 
@@ -166,23 +164,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Add these authentication backends
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'two_factor.auth_backends.TwoFactorBackend',
 ]
 
-# Required for two-factor auth
-# LOGIN_URL = 'two_factor:login'
-# LOGIN_REDIRECT_URL = 'two_factor:profile'
-
-# AUTH_USER_MODEL = 'accounts.CustomUser'
-
-# LOGIN_URL = 'two_factor:login'
-# LOGIN_REDIRECT_URL = 'admin_dashboard'  # Change to your desired redirect
-
-LOGIN_URL = 'two_factor:login'
-LOGIN_REDIRECT_URL = 'admin_dashboard' 
-TWO_FACTOR_PATCH_ADMIN = False  # We're handling admin separately
-TWO_FACTOR_REMEMBER_COOKIE_AGE = 86400 * 30  # 30 days
-
-# Disable phone verification if not needed
-TWO_FACTOR_CALL_GATEWAY = None
-TWO_FACTOR_SMS_GATEWAY = None
